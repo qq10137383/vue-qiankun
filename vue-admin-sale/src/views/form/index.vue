@@ -55,37 +55,50 @@
         <el-button @click="onCancel">Cancel</el-button>
       </el-form-item>
     </el-form>
+    <p>{{ form._text }}</p>
+    <button @click="changeData">change</button>
+    <p>{{ $data._name }}</p>
+    <button @click="changeData1">change1</button>
   </div>
 </template>
 
 <script>
 export default {
+  name: "Form",
   data() {
     return {
       form: {
-        name: '',
-        region: '',
-        date1: '',
-        date2: '',
+        name: "",
+        region: "",
+        date1: "",
+        date2: "",
         delivery: false,
         type: [],
-        resource: '',
-        desc: ''
-      }
-    }
+        resource: "",
+        desc: "",
+        _text: "abc",
+      },
+      _name: "cde",
+    };
   },
   methods: {
     onSubmit() {
-      this.$message('submit!')
+      this.$message("submit!");
     },
     onCancel() {
       this.$message({
-        message: 'cancel!',
-        type: 'warning'
-      })
-    }
-  }
-}
+        message: "cancel!",
+        type: "warning",
+      });
+    },
+    changeData() {
+      this.form._text += "b";
+    },
+    changeData1() {
+      this.$data._name += "d";
+    },
+  },
+};
 </script>
 
 <style scoped>

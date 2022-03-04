@@ -1,0 +1,29 @@
+{
+  "name": "vue-qiankun",
+  "version": "1.0.0",
+  "description": "vue-qiankun",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:main": "cd ./vue-admin-main && npm run dev",
+    "start:sale": "cd ./vue-admin-sale && npm run dev",
+    "start:house": "cd ./vue-admin-house && npm run dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qq10137383/vue-qiankun.git"
+  },
+  "keywords": [
+    "vue",
+    "qiankun"
+  ],
+  "author": "bubble",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/qq10137383/vue-qiankun/issues"
+  },
+  "homepage": "https://github.com/qq10137383/vue-qiankun#readme",
+  "dependencies": {
+    "mitt": "^3.0.0"
+  }
+}

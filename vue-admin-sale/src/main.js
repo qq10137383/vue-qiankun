@@ -2,6 +2,7 @@ import './public-path'
 import Vue from 'vue'
 
 import Element from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css'
 import enLang from 'element-ui/lib/locale/lang/en'// 如果使用中文语言包请默认支持，无需额外引入，请删除该依赖
 
 import App from './App'
@@ -9,6 +10,8 @@ import store from './store'
 import { createRouter, disposeRouter } from './router'
 
 import * as filters from './filters' // global filters
+
+import { initApps } from './micro-apps'
 
 /**
  * If you don't want to use mock-server
@@ -59,7 +62,10 @@ export async function bootstrap() {
 
 export async function mount(props) {
   console.log('vue-admin-sale mount')
+
+  Vue.prototype.$substrate = props
   render(props)
+  initApps(instance)
 }
 
 export async function unmount() {

@@ -11,6 +11,16 @@ export default {
     return {
       appId: process.env.VUE_APP_NAME
     }
+  },
+  computed: {
+    cachedViews() {
+      return this.$store.state.tagsView.cachedViews
+    }
+  },
+  watch: {
+    cachedViews(val) {
+      debugger
+    }
   }
 }
 </script>

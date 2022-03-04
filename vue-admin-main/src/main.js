@@ -20,8 +20,7 @@ import './utils/error-log' // error log
 
 import * as filters from './filters' // global filters
 
-import { registerApps } from '@/micro-apps/register' // register micro apps
-registerApps()
+import { initApps } from '@/micro-apps' 
 
 /**
  * If you don't want to use mock-server
@@ -48,10 +47,12 @@ Object.keys(filters).forEach(key => {
 
 Vue.config.productionTip = false
 
-new Vue({
+const instance = new Vue({
   el: '#app',
   router,
   store,
   render: h => h(App)
 })
 
+// register micro apps
+initApps(instance)

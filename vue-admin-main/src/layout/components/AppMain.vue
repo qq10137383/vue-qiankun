@@ -10,27 +10,27 @@
 </template>
 
 <script>
-import startApps from '@/micro-apps/starter'
-import AppWrap from './AppWrap'
+import { startApps } from "@/micro-apps";
+import AppWrap from "./AppWrap";
 
 export default {
-  name: 'AppMain',
+  name: "AppMain",
   components: {
-    AppWrap
+    AppWrap,
   },
   computed: {
     cachedViews() {
-      return this.$store.state.tagsView.cachedViews
+      return this.$store.state.tagsView.cachedViews;
     },
     key() {
-      return this.$route.path
-    }
+      return this.$route.path;
+    },
   },
   mounted() {
     // 子应用挂载dom(microApp)初始化完成后启动qiankun，否则子应用加载会报错
-    startApps()
-  }
-}
+    startApps();
+  },
+};
 </script>
 
 <style lang="scss" scoped>
