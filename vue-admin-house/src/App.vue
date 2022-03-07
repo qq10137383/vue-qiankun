@@ -11,6 +11,10 @@ export default {
     return {
       appId: process.env.VUE_APP_NAME
     }
+  },
+  created() {
+    console.log(window.__myHouse)
+    debugger
   }
 }
 </script>

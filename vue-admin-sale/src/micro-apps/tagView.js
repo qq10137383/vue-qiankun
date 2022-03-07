@@ -12,6 +12,6 @@ export function initTagView(inst) {
     setCachedViews(tagsView.getCachedViews())
 
     inst.$once('hook:beforeDestroy', () => {
-      
+        emitter.off(tagsView.EVENT_CACHED_CHANGE, setCachedViews)
     })
 }

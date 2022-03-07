@@ -6,21 +6,22 @@
 
 <script>
 export default {
-  name: 'App',
+  name: "App",
   data() {
     return {
-      appId: process.env.VUE_APP_NAME
-    }
+      appId: process.env.VUE_APP_NAME,
+    };
   },
   computed: {
     cachedViews() {
-      return this.$store.state.tagsView.cachedViews
-    }
+      return this.$store.state.tagsView.cachedViews;
+    },
   },
   watch: {
     cachedViews(val) {
-      debugger
-    }
-  }
-}
+      let a = window.__mySale;
+      debugger;
+    },
+  },
+};
 </script>

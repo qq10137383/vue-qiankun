@@ -39,6 +39,8 @@ Vue.config.productionTip = false
 let instance = null
 
 function render({ container } = {}) {
+  debugger
+  if (instance) return
   const appName = `#${process.env.VUE_APP_NAME}`
   const el = container ? container.querySelector(appName) : appName
   const router = createRouter()
@@ -55,6 +57,7 @@ if (!window.__POWERED_BY_QIANKUN__) {
 }
 
 export async function bootstrap() {
+  window.__myHouse = 'House'
   console.log('vue-admin-house bootstraped')
 }
 
@@ -64,9 +67,10 @@ export async function mount(props) {
 }
 
 export async function unmount() {
+  debugger
   console.log('vue-admin-house unmount')
-  instance.$destroy()
-  instance.$el.innerHTML = ''
-  instance = null
-  disposeRouter()
+  // instance.$destroy()
+  // instance.$el.innerHTML = ''
+  // instance = null
+  // disposeRouter()
 }
