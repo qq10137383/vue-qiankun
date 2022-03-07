@@ -12,7 +12,7 @@ export function initApps(inst) {
 }
 
 
-let started = window.__QIANKUN_STARTED__ = false
+let started
 
 /**
  * 启动微应用
@@ -23,9 +23,10 @@ export function startApps() {
             sandbox: {
                 // 样式隔离(增加微应用前缀)
                 experimentalStyleIsolation: true
-            }
+            },
+            // 开启keepAlive
+            keepAlive: true,
         })
         started = true
     }
-    window.__QIANKUN_STARTED__ = started
 }
