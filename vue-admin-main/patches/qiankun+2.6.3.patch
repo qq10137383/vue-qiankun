@@ -1,5 +1,5 @@
 diff --git a/node_modules/qiankun/es/loader.js b/node_modules/qiankun/es/loader.js
-index e48c06f..3afeb0a 100644
+index e48c06f..3e4c67c 100644
 --- a/node_modules/qiankun/es/loader.js
 +++ b/node_modules/qiankun/es/loader.js
 @@ -137,11 +137,11 @@ var rawRemoveChild = HTMLElement.prototype.removeChild;
@@ -21,7 +21,7 @@ index e48c06f..3afeb0a 100644
        assertElementExist(containerElement, errorMsg);
      }
  
-+    // patch 2: 配置增加keepAlive参数，设为true时应用卸载将不会销毁挂载容器，只是隐藏(display:none)
++    // patch: 配置增加keepAlive参数，设为true时应用卸载将不会销毁挂载容器，只是隐藏(display:none)
 +    if (keepAlive && containerElement) {
 +      if (!element) {
 +        containerElement.style.display = "none"
@@ -40,29 +40,31 @@ index e48c06f..3afeb0a 100644
              initialContainer = 'container' in app ? app.container : undefined;
              legacyRender = 'render' in app ? app.render : undefined;
 -            render = getRender(appInstanceId, appContent, legacyRender); // 第一次加载设置应用可见区域 dom 结构
-+            // patch 1：配置增加keepAlive参数，设为true时应用卸载将不会销毁挂载容器，只是隐藏(display:none)
++            // patch：配置增加keepAlive参数，设为true时应用卸载将不会销毁挂载容器，只是隐藏(display:none)
 +            var keepAlive = configuration.keepAlive
 +            render = getRender(appInstanceId, appContent, legacyRender, keepAlive); // 第一次加载设置应用可见区域 dom 结构
              // 确保每次应用加载前容器 dom 结构已经设置完毕
  
              render({
-@@ -304,7 +317,7 @@ export function loadApp(app) {
+@@ -303,8 +316,9 @@ export function loadApp(app) {
+             useLooseSandbox = _typeof(sandbox) === 'object' && !!sandbox.loose;
  
              if (sandbox) {
++              // patch：keepAlive模式下沙盒在反激活时不要移除事件监听，设置暂时禁用 
                sandboxContainer = createSandboxContainer(appInstanceId, // FIXME should use a strict sandbox logic while remount, see https://github.com/umijs/qiankun/issues/518
 -              initialAppWrapperGetter, scopedCSS, useLooseSandbox, excludeAssetFilter, global); // 用沙箱的代理对象作为接下来使用的全局对象
-+                initialAppWrapperGetter, scopedCSS, useLooseSandbox, excludeAssetFilter, global); // 用沙箱的代理对象作为接下来使用的全局对象
++                initialAppWrapperGetter, scopedCSS, useLooseSandbox, excludeAssetFilter, global, keepAlive); // 用沙箱的代理对象作为接下来使用的全局对象
  
                global = sandboxContainer.instance.proxy;
                mountSandbox = sandboxContainer.mount;
-@@ -620,9 +633,11 @@ export function loadApp(app) {
+@@ -620,9 +634,11 @@ export function loadApp(app) {
                              }, 'unmounted');
                              offGlobalStateChange(appInstanceId); // for gc
  
 -                            appWrapperElement = null;
 -                            syncAppWrapperElement2Sandbox(appWrapperElement);
 -
-+                            // patch 3: keepAlive模式下不销毁挂载容器
++                            // patch: keepAlive模式下不销毁挂载容器
 +                            if (!configuration.keepAlive) {
 +                              appWrapperElement = null;
 +                              syncAppWrapperElement2Sandbox(appWrapperElement);
@@ -70,3 +72,246 @@ index e48c06f..3afeb0a 100644
                            case 4:
                            case "end":
                              return _context15.stop();
+diff --git a/node_modules/qiankun/es/sandbox/index.js b/node_modules/qiankun/es/sandbox/index.js
+index 2faaffa..363c9d8 100644
+--- a/node_modules/qiankun/es/sandbox/index.js
++++ b/node_modules/qiankun/es/sandbox/index.js
+@@ -25,15 +25,16 @@ export { getCurrentRunningApp } from './common';
+  * @param useLooseSandbox
+  * @param excludeAssetFilter
+  * @param globalContext
++ * @param keepAlive
+  */
+-
+-export function createSandboxContainer(appName, elementGetter, scopedCSS, useLooseSandbox, excludeAssetFilter, globalContext) {
++// patch 沙盒增加keepAlive参数
++export function createSandboxContainer(appName, elementGetter, scopedCSS, useLooseSandbox, excludeAssetFilter, globalContext, keepAlive) {
+   var sandbox;
+ 
+   if (window.Proxy) {
+-    sandbox = useLooseSandbox ? new LegacySandbox(appName, globalContext) : new ProxySandbox(appName, globalContext);
++    sandbox = useLooseSandbox ? new LegacySandbox(appName, globalContext, keepAlive) : new ProxySandbox(appName, globalContext, keepAlive);
+   } else {
+-    sandbox = new SnapshotSandbox(appName);
++    sandbox = new SnapshotSandbox(appName, keepAlive);
+   } // some side effect could be be invoked while bootstrapping, such as dynamic stylesheet injection with style-loader, especially during the development phase
+ 
+ 
+@@ -41,6 +42,7 @@ export function createSandboxContainer(appName, elementGetter, scopedCSS, useLoo
+ 
+   var mountingFreers = [];
+   var sideEffectsRebuilders = [];
++  var isReady = false
+   return {
+     instance: sandbox,
+ 
+@@ -84,6 +86,7 @@ export function createSandboxContainer(appName, elementGetter, scopedCSS, useLoo
+ 
+ 
+                 sideEffectsRebuilders = [];
++                isReady = true;
+ 
+               case 7:
+               case "end":
+diff --git a/node_modules/qiankun/es/sandbox/legacy/sandbox.js b/node_modules/qiankun/es/sandbox/legacy/sandbox.js
+index 4e12900..bc37b36 100644
+--- a/node_modules/qiankun/es/sandbox/legacy/sandbox.js
++++ b/node_modules/qiankun/es/sandbox/legacy/sandbox.js
+@@ -20,6 +20,7 @@ var LegacySandbox = /*#__PURE__*/function () {
+     var _this = this;
+ 
+     var globalContext = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : window;
++    var keepAlive = arguments.length > 2 ? arguments[2]  : false;
+ 
+     _classCallCheck(this, LegacySandbox);
+ 
+@@ -35,6 +36,8 @@ var LegacySandbox = /*#__PURE__*/function () {
+     this.latestSetProp = null;
+     this.name = name;
+     this.globalContext = globalContext;
++    this.keepAlive = keepAlive;
++    this.activeCount = 0;
+     this.type = SandBoxType.LegacyProxy;
+     var addedPropsMapInSandbox = this.addedPropsMapInSandbox,
+         modifiedPropsOriginalValueMapInSandbox = this.modifiedPropsOriginalValueMapInSandbox,
+@@ -140,6 +143,7 @@ var LegacySandbox = /*#__PURE__*/function () {
+       }
+ 
+       this.sandboxRunning = true;
++      this.activeCount++;
+     }
+   }, {
+     key: "inactive",
+diff --git a/node_modules/qiankun/es/sandbox/patchers/historyListener.js b/node_modules/qiankun/es/sandbox/patchers/historyListener.js
+index 76cd93c..fb77fee 100644
+--- a/node_modules/qiankun/es/sandbox/patchers/historyListener.js
++++ b/node_modules/qiankun/es/sandbox/patchers/historyListener.js
+@@ -1,6 +1,6 @@
+ import _isFunction from "lodash/isFunction";
+ import _noop from "lodash/noop";
+-export default function patch() {
++export default function patch(sandbox) {
+   // FIXME umi unmount feature request
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   var rawHistoryListen = function rawHistoryListen(_) {
+diff --git a/node_modules/qiankun/es/sandbox/patchers/index.js b/node_modules/qiankun/es/sandbox/patchers/index.js
+index f359ab2..145c7ab 100644
+--- a/node_modules/qiankun/es/sandbox/patchers/index.js
++++ b/node_modules/qiankun/es/sandbox/patchers/index.js
+@@ -16,11 +16,11 @@ export function patchAtMounting(appName, elementGetter, sandbox, scopedCSS, excl
+   var _a;
+ 
+   var basePatchers = [function () {
+-    return patchInterval(sandbox.proxy);
++    return patchInterval(sandbox);
+   }, function () {
+-    return patchWindowListener(sandbox.proxy);
++    return patchWindowListener(sandbox);
+   }, function () {
+-    return patchHistoryListener();
++    return patchHistoryListener(sandbox);
+   }];
+   var patchersInSandbox = (_patchersInSandbox = {}, _defineProperty(_patchersInSandbox, SandBoxType.LegacyProxy, [].concat(basePatchers, [function () {
+     return patchLooseSandbox(appName, elementGetter, sandbox.proxy, true, scopedCSS, excludeAssetFilter);
+diff --git a/node_modules/qiankun/es/sandbox/patchers/interval.js b/node_modules/qiankun/es/sandbox/patchers/interval.js
+index 02436e0..f5aa3aa 100644
+--- a/node_modules/qiankun/es/sandbox/patchers/interval.js
++++ b/node_modules/qiankun/es/sandbox/patchers/interval.js
+@@ -2,7 +2,8 @@ import _noop from "lodash/noop";
+ import _toConsumableArray from "@babel/runtime/helpers/esm/toConsumableArray";
+ var rawWindowInterval = window.setInterval;
+ var rawWindowClearInterval = window.clearInterval;
+-export default function patch(global) {
++export default function patch(sandbox) {
++  var global = sandbox.proxy;
+   var intervals = [];
+ 
+   global.clearInterval = function (intervalId) {
+diff --git a/node_modules/qiankun/es/sandbox/patchers/windowListener.js b/node_modules/qiankun/es/sandbox/patchers/windowListener.js
+index 46379ea..89df516 100644
+--- a/node_modules/qiankun/es/sandbox/patchers/windowListener.js
++++ b/node_modules/qiankun/es/sandbox/patchers/windowListener.js
+@@ -2,33 +2,54 @@ import _noop from "lodash/noop";
+ import _toConsumableArray from "@babel/runtime/helpers/esm/toConsumableArray";
+ var rawAddEventListener = window.addEventListener;
+ var rawRemoveEventListener = window.removeEventListener;
+-export default function patch(global) {
++export default function patch(sandbox) {
++  if (sandbox.keepAlive && sandbox.activeCount > 1) {
++    return function free() {
++      return _noop;
++    }
++  }
++  var global = sandbox.proxy;
+   var listenerMap = new Map();
++  var hookMap = new Map();
++  var hookId = 0;
+ 
+   global.addEventListener = function (type, listener, options) {
++    listener.hookId = ++hookId;
++    var listenerWrapper = function () {
++      if (sandbox.sandboxRunning) {
++        listener(arguments)
++      }
++    }
++    hookMap.set(hookId, listenerWrapper);
+     var listeners = listenerMap.get(type) || [];
+-    listenerMap.set(type, [].concat(_toConsumableArray(listeners), [listener]));
+-    return rawAddEventListener.call(window, type, listener, options);
++    listenerMap.set(type, [].concat(_toConsumableArray(listeners), [listenerWrapper]));
++    return rawAddEventListener.call(window, type, listenerWrapper, options);
+   };
+ 
+   global.removeEventListener = function (type, listener, options) {
++    var listenerWrapper = listener;
++    if (listener.hookId && hookMap.has(listener.hookId)) {
++      listenerWrapper = hookMap.get(listener.hookId)
++    }
+     var storedTypeListeners = listenerMap.get(type);
+ 
+-    if (storedTypeListeners && storedTypeListeners.length && storedTypeListeners.indexOf(listener) !== -1) {
+-      storedTypeListeners.splice(storedTypeListeners.indexOf(listener), 1);
++    if (storedTypeListeners && storedTypeListeners.length && storedTypeListeners.indexOf(listenerWrapper) !== -1) {
++      storedTypeListeners.splice(storedTypeListeners.indexOf(listenerWrapper), 1);
+     }
+ 
+-    return rawRemoveEventListener.call(window, type, listener, options);
++    return rawRemoveEventListener.call(window, type, listenerWrapper, options);
+   };
+ 
+   return function free() {
+-    listenerMap.forEach(function (listeners, type) {
+-      return _toConsumableArray(listeners).forEach(function (listener) {
+-        return global.removeEventListener(type, listener);
++    if (!sandbox.keepAlive) {
++      listenerMap.forEach(function (listeners, type) {
++        return _toConsumableArray(listeners).forEach(function (listener) {
++          return global.removeEventListener(type, listener);
++        });
+       });
+-    });
+-    global.addEventListener = rawAddEventListener;
+-    global.removeEventListener = rawRemoveEventListener;
++      global.addEventListener = rawAddEventListener;
++      global.removeEventListener = rawRemoveEventListener;
++    }
+     return _noop;
+   };
+ }
+\ No newline at end of file
+diff --git a/node_modules/qiankun/es/sandbox/proxySandbox.js b/node_modules/qiankun/es/sandbox/proxySandbox.js
+index 375881f..3d0e3ae 100644
+--- a/node_modules/qiankun/es/sandbox/proxySandbox.js
++++ b/node_modules/qiankun/es/sandbox/proxySandbox.js
+@@ -117,6 +117,7 @@ var ProxySandbox = /*#__PURE__*/function () {
+     var _this = this;
+ 
+     var globalContext = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : window;
++    var keepAlive = arguments.length > 2 ? arguments[2]  : false;
+ 
+     _classCallCheck(this, ProxySandbox);
+ 
+@@ -126,6 +127,8 @@ var ProxySandbox = /*#__PURE__*/function () {
+     this.latestSetProp = null;
+     this.name = name;
+     this.globalContext = globalContext;
++    this.keepAlive = keepAlive;
++    this.activeCount = 0;
+     this.type = SandBoxType.Proxy;
+     var updatedValueSet = this.updatedValueSet;
+ 
+@@ -326,6 +329,7 @@ var ProxySandbox = /*#__PURE__*/function () {
+     value: function active() {
+       if (!this.sandboxRunning) activeSandboxCount++;
+       this.sandboxRunning = true;
++      this.activeCount++;
+     }
+   }, {
+     key: "inactive",
+diff --git a/node_modules/qiankun/es/sandbox/snapshotSandbox.js b/node_modules/qiankun/es/sandbox/snapshotSandbox.js
+index b912284..4ef3a53 100644
+--- a/node_modules/qiankun/es/sandbox/snapshotSandbox.js
++++ b/node_modules/qiankun/es/sandbox/snapshotSandbox.js
+@@ -20,10 +20,14 @@ var SnapshotSandbox = /*#__PURE__*/function () {
+   function SnapshotSandbox(name) {
+     _classCallCheck(this, SnapshotSandbox);
+ 
++    var keepAlive = arguments.length > 1 ? arguments[1]  : false;
++
+     this.sandboxRunning = true;
+     this.modifyPropsMap = {};
+     this.name = name;
+     this.proxy = window;
++    this.keepAlive = keepAlive;
++    this.activeCount = 0;
+     this.type = SandBoxType.Snapshot;
+   }
+ 
+@@ -42,6 +46,7 @@ var SnapshotSandbox = /*#__PURE__*/function () {
+         window[p] = _this.modifyPropsMap[p];
+       });
+       this.sandboxRunning = true;
++      this.activeCount++;
+     }
+   }, {
+     key: "inactive",
