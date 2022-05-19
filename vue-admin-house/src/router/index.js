@@ -3,13 +3,6 @@ import Router from 'vue-router'
 
 Vue.use(Router)
 
-import { Blank } from '@/layout'
-
-/**
- * constantRoutes
- * a base page that does not have permission requirements
- * all roles can be accessed
- */
 export const constantRoutes = [
   {
     path: '/404',
@@ -22,37 +15,20 @@ export const constantRoutes = [
     hidden: true
   },
   {
-    path: '/submit',
-    component: Blank,
-    redirect: '/submit/index',
-    children: [
-      {
-        path: 'index',
-        name: 'Submit',
-        component: () => import('@/views/submit/index'),
-        meta: { title: 'House Submit', icon: 'form' }
-      }
-    ]
+    path: '/submit/index',
+    name: 'Submit',
+    component: () => import('@/views/submit/index'),
   },
   {
-    path: '/example',
-    component: Blank,
-    redirect: '/example/article',
-    children: [
-      {
-        path: 'article',
-        name: 'Article',
-        component: () => import('@/views/article/index'),
-        meta: { title: 'House Article', icon: 'table' }
-      },
-      {
-        path: 'leaf',
-        name: 'Leaf',
-        component: () => import('@/views/leaf/index'),
-        meta: { title: 'House Leaf', icon: 'table' }
-      }
-    ]
-  }
+    path: '/example/article',
+    name: 'Article',
+    component: () => import('@/views/article/index')
+  },
+  {
+    path: '/example/leaf',
+    name: 'Leaf',
+    component: () => import('@/views/leaf/index'),
+  },
 ]
 
 let router = null
@@ -63,6 +39,10 @@ export function createRouter() {
     base: window.__POWERED_BY_QIANKUN__ ? `/${process.env.VUE_APP_NAME}` : '/',
     scrollBehavior: () => ({ y: 0 }),
     routes: constantRoutes
+  })
+  router.beforeEach((to, from, next) => {
+    debugger
+    next()
   })
   return router
 }

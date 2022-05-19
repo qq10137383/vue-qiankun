@@ -20,6 +20,7 @@
 
 <script>
 export default {
+  name: "Leaf",
   data() {
     return {
       filterText: "",

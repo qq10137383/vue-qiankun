@@ -60,6 +60,7 @@
 
 <script>
 export default {
+  name: "Submit",
   data() {
     return {
       form: {
@@ -73,6 +74,12 @@ export default {
         desc: "",
       },
     };
+  },
+  created() {
+    debugger
+  },
+  destroyed() {
+    debugger
   },
   methods: {
     onSubmit() {

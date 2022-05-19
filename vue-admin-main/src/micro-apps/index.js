@@ -1,6 +1,6 @@
-import { start } from 'qiankun'
+import { start } from 'qiankun-dhc'
 import { registerApps } from './register'
-import { initTagView } from './tagView'
+import { initTabView } from './tab-view'
 
 /**
  * 初始化微应用
@@ -8,7 +8,7 @@ import { initTagView } from './tagView'
  */
 export function initApps(inst) {
     registerApps()
-    initTagView(inst)
+    initTabView(inst)
 }
 
 

@@ -3,8 +3,6 @@ import Router from 'vue-router'
 
 Vue.use(Router)
 
-import { Blank } from '@/layout'
-
 /**
  * constantRoutes
  * a base page that does not have permission requirements
@@ -14,51 +12,30 @@ export const constantRoutes = [
   {
     path: '/404',
     component: () => import('@/views/error-page/404'),
-    hidden: true
   },
   {
     path: '/401',
     component: () => import('@/views/error-page/401'),
-    hidden: true
   },
   {
     path: '/testDemo',
     name: 'TestDemo',
     component: () => import('@/views/test-demo/test'),
-    meta: { title: 'Sale dashboard', icon: 'dashboard' }
   },
   {
-    path: '/form',
-    redirect: '/form/index',
-    component: Blank,
-    children: [
-      {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: 'Sale Form', icon: 'form' }
-      }
-    ]
+    path: '/form/index',
+    name: 'Form',
+    component: () => import('@/views/form/index')
   },
   {
-    path: '/example',
-    redirect: '/example/table',
-    component: Blank,
-    meta: { title: 'Example', icon: 'el-icon-s-help' },
-    children: [
-      {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Sale Table', icon: 'table' }
-      },
-      {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Sale Tree', icon: 'tree' }
-      }
-    ]
+    path: '/example/table',
+    name: 'Table',
+    component: () => import('@/views/table/index')
+  },
+  {
+    path: '/example/tree',
+    name: 'Tree',
+    component: () => import('@/views/tree/index')
   }
 ]
 

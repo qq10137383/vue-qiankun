@@ -12,9 +12,7 @@
     "new": "plop",
     "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml",
     "test:unit": "jest --clearCache && vue-cli-service test:unit",
-    "test:ci": "npm run lint && npm run test:unit",
-    "patch:qiankun": "patch-package qiankun",
-    "postinstall": "patch-package"
+    "test:ci": "npm run lint && npm run test:unit"
   },
   "dependencies": {
     "axios": "0.18.1",
@@ -33,7 +31,7 @@
     "normalize.css": "7.0.0",
     "nprogress": "0.2.0",
     "path-to-regexp": "2.4.0",
-    "qiankun": "2.6.3",
+    "qiankun-dhc": "2.7.0",
     "screenfull": "4.2.0",
     "script-loader": "0.7.2",
     "sortablejs": "1.8.4",
@@ -65,9 +63,7 @@
     "husky": "1.3.1",
     "lint-staged": "8.1.5",
     "mockjs": "1.0.1-beta3",
-    "patch-package": "^6.4.7",
     "plop": "2.3.0",
-    "postinstall-postinstall": "^2.1.0",
     "runjs": "4.3.2",
     "sass": "1.26.2",
     "sass-loader": "8.0.2",

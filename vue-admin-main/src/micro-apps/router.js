@@ -10,7 +10,7 @@ function parseAppRoute(app, route, parent) {
   origin.name = route.name
   route.component = parent ? Blank : Layout
   if (route.name) {
-    route.name = `${app.name}-${route.name}`
+    route.name = `${app.name}#${route.name}`
   }
   if (route.path.startsWith('/')) {
     route.path = `/${app.name}${route.path}`

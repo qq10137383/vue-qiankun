@@ -14,7 +14,7 @@ const app = {
         {
           path: 'index',
           name: 'Submit',
-          meta: { title: 'House Submit', icon: 'form' }
+          meta: { title: 'House Submit', icon: 'form', noCache: true }
         }
       ]
     },

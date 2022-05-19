@@ -41,7 +41,6 @@ Vue.config.productionTip = false
 let instance = null
 
 function render({ container } = {}) {
-  debugger
   if (instance) return
   const appName = `#${process.env.VUE_APP_NAME}`
   const el = container ? container.querySelector(appName) : appName
@@ -66,13 +65,12 @@ export async function bootstrap() {
 export async function mount(props) {
   console.log('vue-admin-sale mount')
 
-  Vue.prototype.$substrate = props
+  Vue.prototype.$mainApp = props
   render(props)
   initApps(instance)
 }
 
 export async function unmount() {
-  debugger
   console.log('vue-admin-sale unmount')
   // instance.$destroy()
   // instance.$el.innerHTML = ''

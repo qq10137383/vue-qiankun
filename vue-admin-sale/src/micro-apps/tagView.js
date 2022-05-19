@@ -3,13 +3,16 @@
  * @param {vm} inst 
  */
 export function initTagView(inst) {
-    const { emitter, tagsView } = inst.$substrate
+    const { emitter, tabView } = inst.$mainApp
 
-    function setCachedViews(val) {
-        inst.$store.dispatch('tagsView/setCachedViews', val)
+    function setCachedViews() {
+        const views = tabView.getAppCachedViews(process.env.VUE_APP_NAME)
+        inst.$store.dispatch('tagsView/setCachedViews', views)
     }
-    emitter.on(tagsView.EVENT_CACHED_CHANGE, setCachedViews)
-    setCachedViews(tagsView.getCachedViews())
+
+    emitter.on(tabView.EVENT_CACHED_CHANGE, setCachedViews)
+
+    setCachedViews()
 
     inst.$once('hook:beforeDestroy', () => {
         emitter.off(tagsView.EVENT_CACHED_CHANGE, setCachedViews)

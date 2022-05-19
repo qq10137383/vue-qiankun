@@ -1,7 +1,7 @@
-import { registerMicroApps } from 'qiankun'
+import { registerMicroApps } from 'qiankun-dhc'
 import getAppConfigs from './config'
 import emitter from './emitter'
-import tagsView from './tagView'
+import tabView from './tab-view'
 
 function getAppEntry(app) {
   return process.env.NODE_ENV === 'dev' ? `http://localhost:${app.devPort}` : app.entry
@@ -18,7 +18,7 @@ export function getRegisterConfig() {
       activeRule: `/${name}`,
       props: {
         emitter,
-        tagsView
+        tabView
       },
     }
   })

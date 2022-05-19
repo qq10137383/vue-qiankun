@@ -1,3 +1,5 @@
+import tabView from '@/micro-apps/tab-view'
+
 const state = {
   visitedViews: [],
   cachedViews: []
@@ -70,6 +72,7 @@ const actions = {
   addView({ dispatch }, view) {
     dispatch('addVisitedView', view)
     dispatch('addCachedView', view)
+    tabView.invokeEvent(tabView.EVENT_OPEN_VIEW, view)
   },
   addVisitedView({ commit }, view) {
     commit('ADD_VISITED_VIEW', view)
@@ -77,7 +80,13 @@ const actions = {
   addCachedView({ commit }, view) {
     commit('ADD_CACHED_VIEW', view)
   },
-
+  refreshView({ commit, state }, view) {
+    return new Promise(resolve => {
+      commit('DEL_CACHED_VIEW', view)
+      resolve([...state.cachedViews])
+      tabView.invokeEvent(tabView.EVENT_REFRESH_VIEW, view)
+    })
+  },
   delView({ dispatch, state }, view) {
     return new Promise(resolve => {
       dispatch('delVisitedView', view)
@@ -86,6 +95,7 @@ const actions = {
         visitedViews: [...state.visitedViews],
         cachedViews: [...state.cachedViews]
       })
+      tabView.invokeEvent(tabView.EVENT_CLOSE_VIEW, view)
     })
   },
   delVisitedView({ commit, state }, view) {
@@ -109,6 +119,7 @@ const actions = {
         visitedViews: [...state.visitedViews],
         cachedViews: [...state.cachedViews]
       })
+      tabView.invokeEvent(tabView.EVENT_CLOSE_OTHERS_VIEW, view)
     })
   },
   delOthersVisitedViews({ commit, state }, view) {
@@ -132,6 +143,7 @@ const actions = {
         visitedViews: [...state.visitedViews],
         cachedViews: [...state.cachedViews]
       })
+      tabView.invokeEvent(tabView.EVENT_CLOSE_ALL_VIEW, view)
     })
   },
   delAllVisitedViews({ commit, state }) {

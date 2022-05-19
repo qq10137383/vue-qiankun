@@ -1,6 +1,8 @@
 <template>
   <div :id="appId">
-    <router-view />
+    <keep-alive :include="cachedViews">
+      <router-view :key="key" />
+    </keep-alive>
   </div>
 </template>
 
@@ -16,12 +18,14 @@ export default {
     cachedViews() {
       return this.$store.state.tagsView.cachedViews;
     },
+    key() {
+      return this.$route.path;
+    },
   },
   watch: {
     cachedViews(val) {
-      let a = window.__mySale;
-      debugger;
-    },
-  },
+      debugger
+    }
+  }
 };
 </script>

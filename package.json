@@ -23,7 +23,6 @@
     "url": "https://github.com/qq10137383/vue-qiankun/issues"
   },
   "homepage": "https://github.com/qq10137383/vue-qiankun#readme",
-  "dependencies": {
-    "mitt": "^3.0.0"
-  }
+  "dependencies": {},
+  "devDependencies": {}
 }
