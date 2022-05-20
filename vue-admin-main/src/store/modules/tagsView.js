@@ -90,6 +90,8 @@ const actions = {
       commit('REFRESH_VIEW_KEY', view)
       resolve([...state.cachedViews])
       tabView.invokeEvent(tabView.EVENT_REFRESH_VIEW, view)
+      // 刷新完成后将缓存恢复(这里粗暴处理一下，1s后执行)
+      setTimeout(() => commit('ADD_CACHED_VIEW', view), 1000)
     })
   },
   delView({ dispatch, state }, view) {
