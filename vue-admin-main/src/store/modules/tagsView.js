@@ -1,8 +1,10 @@
 import tabView from '@/micro-apps/tab-view'
+import { getAppNameFromRoute } from '@/micro-apps/router'
 
 const state = {
   visitedViews: [],
-  cachedViews: []
+  cachedViews: [],
+  refreshKey: '', // 视图刷新key，用于视图刷新
 }
 
 const mutations = {
@@ -20,7 +22,12 @@ const mutations = {
       state.cachedViews.push(view.name)
     }
   },
-
+  REFRESH_VIEW_KEY: (state, view) => {
+    // 仅基座的路由更新刷新key，微应用的下发到子系统刷新
+    if (!getAppNameFromRoute(view)) {
+      state.refreshKey = String(new Date().getTime())
+    }
+  },
   DEL_VISITED_VIEW: (state, view) => {
     for (const [i, v] of state.visitedViews.entries()) {
       if (v.path === view.path) {
@@ -33,7 +40,6 @@ const mutations = {
     const index = state.cachedViews.indexOf(view.name)
     index > -1 && state.cachedViews.splice(index, 1)
   },
-
   DEL_OTHERS_VISITED_VIEWS: (state, view) => {
     state.visitedViews = state.visitedViews.filter(v => {
       return v.meta.affix || v.path === view.path
@@ -48,7 +54,6 @@ const mutations = {
       state.cachedViews = []
     }
   },
-
   DEL_ALL_VISITED_VIEWS: state => {
     // keep affix tags
     const affixTags = state.visitedViews.filter(tag => tag.meta.affix)
@@ -57,7 +62,6 @@ const mutations = {
   DEL_ALL_CACHED_VIEWS: state => {
     state.cachedViews = []
   },
-
   UPDATE_VISITED_VIEW: (state, view) => {
     for (let v of state.visitedViews) {
       if (v.path === view.path) {
@@ -83,6 +87,7 @@ const actions = {
   refreshView({ commit, state }, view) {
     return new Promise(resolve => {
       commit('DEL_CACHED_VIEW', view)
+      commit('REFRESH_VIEW_KEY', view)
       resolve([...state.cachedViews])
       tabView.invokeEvent(tabView.EVENT_REFRESH_VIEW, view)
     })

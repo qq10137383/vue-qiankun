@@ -1,4 +1,4 @@
-import { start } from 'qiankun-dhc'
+import { start } from 'qiankun-dhcc'
 import { registerApps } from './register'
 import { initTabView } from './tab-view'
 
@@ -12,21 +12,24 @@ export function initApps(inst) {
 }
 
 
+const defaultOptions = {
+    sandbox: {
+        // 样式隔离(增加微应用前缀)
+        experimentalStyleIsolation: true
+    },
+    // 开启keepAlive
+    keepAlive: true,
+}
+
 let started
 
 /**
  * 启动微应用
  */
-export function startApps() {
+export function startApps(options) {
     if (!started) {
-        start({
-            sandbox: {
-                // 样式隔离(增加微应用前缀)
-                experimentalStyleIsolation: true
-            },
-            // 开启keepAlive
-            keepAlive: true,
-        })
+        const opts = Object.assign({}, defaultOptions, options)
+        start(opts)
         started = true
     }
 }

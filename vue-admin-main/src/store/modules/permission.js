@@ -1,5 +1,5 @@
 import { constantRoutes } from '@/router'
-import getAppRoutes from '@/micro-apps/router'
+import { getAppRoutes } from '@/micro-apps/router'
 
 /**
  * Use meta.role to determine if the current user has permission

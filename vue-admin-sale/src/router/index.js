@@ -10,14 +10,6 @@ Vue.use(Router)
  */
 export const constantRoutes = [
   {
-    path: '/404',
-    component: () => import('@/views/error-page/404'),
-  },
-  {
-    path: '/401',
-    component: () => import('@/views/error-page/401'),
-  },
-  {
     path: '/testDemo',
     name: 'TestDemo',
     component: () => import('@/views/test-demo/test'),

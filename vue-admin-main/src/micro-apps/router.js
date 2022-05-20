@@ -2,6 +2,12 @@ import { deepClone } from '@/utils'
 import { Layout, Blank } from '@/layout'
 import getAppConfigs from './config'
 
+/**
+ * 转换微应用路由
+ * @param {Object} app 
+ * @param {Object} route 
+ * @param {Object} parent 
+ */
 function parseAppRoute(app, route, parent) {
   const meta = route.meta || (route.meta = {})
   const origin = meta.origin = {}
@@ -24,7 +30,11 @@ function parseAppRoute(app, route, parent) {
   }
 }
 
-function getAppRoutes() {
+/**
+ * 获取微应用路由
+ * @returns 
+ */
+export function getAppRoutes() {
   const config = getAppConfigs()
   const routes = Object.keys(config).reduce((routes, name) => {
     const app = config[name]
@@ -38,4 +48,30 @@ function getAppRoutes() {
   return routes
 }
 
-export default getAppRoutes
+/**
+ * 拷贝路由
+ * 对route进行deepClone会导致循环依赖，需要手动深拷贝
+ * @param {Object} route 
+ * @returns 
+ */
+export function cloneRoute(route) {
+  return {
+    name: route.name,
+    title: route.title,
+    path: route.path,
+    fullPath: route.fullPath,
+    hash: route.hash,
+    params: route.params ? deepClone(route.params) : {},
+    query: route.query ? deepClone(route.query) : {},
+    meta: route.meta ? deepClone(route.meta) : {},
+  }
+}
+
+/**
+* 从路由中解析应用名(基座返回空，子应用从meta中解析)
+* @param {Object} route 
+*/
+export function getAppNameFromRoute(route) {
+  let tmp = route
+  return (tmp = tmp.meta) && (tmp = tmp.appName) || ''
+}

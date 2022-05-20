@@ -7,9 +7,11 @@ import enLang from 'element-ui/lib/locale/lang/en'// 如果使用中文语言包
 
 import App from './App'
 import store from './store'
-import { createRouter, disposeRouter } from './router'
+import { createRouter } from './router'
 
 import * as filters from './filters' // global filters
+
+import { initApps } from './micro-apps'
 
 /**
  * If you don't want to use mock-server
@@ -43,6 +45,7 @@ function render({ container } = {}) {
   const appName = `#${process.env.VUE_APP_NAME}`
   const el = container ? container.querySelector(appName) : appName
   const router = createRouter()
+  
   instance = new Vue({
     el,
     router,
@@ -56,13 +59,14 @@ if (!window.__POWERED_BY_QIANKUN__) {
 }
 
 export async function bootstrap() {
-  window.__myHouse = 'House'
   console.log('vue-admin-house bootstraped')
 }
 
 export async function mount(props) {
   console.log('vue-admin-house mount')
+  Vue.prototype.$mainApp = props
   render(props)
+  initApps(instance)
 }
 
 export async function unmount() {

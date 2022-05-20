@@ -7,7 +7,7 @@ import enLang from 'element-ui/lib/locale/lang/en'// 如果使用中文语言包
 
 import App from './App'
 import store from './store'
-import { createRouter, disposeRouter } from './router'
+import { createRouter } from './router'
 
 import * as filters from './filters' // global filters
 
@@ -45,6 +45,7 @@ function render({ container } = {}) {
   const appName = `#${process.env.VUE_APP_NAME}`
   const el = container ? container.querySelector(appName) : appName
   const router = createRouter()
+
   instance = new Vue({
     el,
     router,
@@ -58,7 +59,6 @@ if (!window.__POWERED_BY_QIANKUN__) {
 }
 
 export async function bootstrap() {
-  window.__mySale = "Sale"
   console.log('vue-admin-sale bootstraped')
 }
 

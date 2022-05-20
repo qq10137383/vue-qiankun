@@ -5,16 +5,6 @@ Vue.use(Router)
 
 export const constantRoutes = [
   {
-    path: '/404',
-    component: () => import('@/views/error-page/404'),
-    hidden: true
-  },
-  {
-    path: '/401',
-    component: () => import('@/views/error-page/401'),
-    hidden: true
-  },
-  {
     path: '/submit/index',
     name: 'Submit',
     component: () => import('@/views/submit/index'),
@@ -39,10 +29,6 @@ export function createRouter() {
     base: window.__POWERED_BY_QIANKUN__ ? `/${process.env.VUE_APP_NAME}` : '/',
     scrollBehavior: () => ({ y: 0 }),
     routes: constantRoutes
-  })
-  router.beforeEach((to, from, next) => {
-    debugger
-    next()
   })
   return router
 }

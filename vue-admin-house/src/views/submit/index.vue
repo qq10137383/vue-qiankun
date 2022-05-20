@@ -75,12 +75,6 @@ export default {
       },
     };
   },
-  created() {
-    debugger
-  },
-  destroyed() {
-    debugger
-  },
   methods: {
     onSubmit() {
       this.$message("submit!");

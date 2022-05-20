@@ -4,6 +4,7 @@
  * 基座中的依赖此数据的watcher会失去响应性
  */
 import { deepClone } from '@/utils'
+import { cloneRoute, getAppNameFromRoute } from './router'
 import emitter from './emitter'
 
 // 打开页签事件
@@ -23,20 +24,6 @@ const EVENT_CACHED_CHANGE = 'tabview-cached-changed'
 
 let tagsView
 
-// 对route进行deepClone会导致循环依赖，需要手动深拷贝
-function cloneRouteView(route) {
-    return {
-        name: route.name,
-        title: route.title,
-        path: route.path,
-        fullPath: route.fullPath,
-        hash: route.hash,
-        params: route.params ? deepClone(route.params) : {},
-        query: route.query ? deepClone(route.query) : {},
-        meta: route.meta ? deepClone(route.meta) : {},
-    }
-}
-
 /**
  * 初始化页签
  * @param {Vue} inst vue实例
@@ -47,7 +34,7 @@ export function initTabView(inst) {
     inst.$watch(() => {
         return tagsView.visitedViews
     }, (val) => {
-        const views = val.map(m => cloneRouteView(m))
+        const views = val.map(m => cloneRoute(m))
         emitter.emit(EVENT_VISITED_CHANGE, views)
     })
 
@@ -66,10 +53,10 @@ export function initTabView(inst) {
 function invokeEvent(eventName, args) {
     let result
     if (Array.isArray(args)) {
-        result = args.map(m => cloneRouteView(m))
+        result = args.map(m => cloneRoute(m))
     }
     else {
-        result = cloneRouteView(args)
+        result = cloneRoute(args)
     }
     emitter.emit(eventName, result)
 }
@@ -79,7 +66,17 @@ function invokeEvent(eventName, args) {
  * @returns 
  */
 function getVisitedViews() {
-    return tagsView.visitedViews.map(m => cloneRouteView(m))
+    return tagsView.visitedViews.map(m => cloneRoute(m))
+}
+
+/**
+ * 视图是否属于某微应用
+ * @param {String} appName 
+ * @param {string} view 
+ * @returns 
+ */
+function isAppView(appName, view) {
+    return getAppNameFromRoute(view) === appName
 }
 
 /**
@@ -87,9 +84,7 @@ function getVisitedViews() {
  * @param {string} appName 微应用名
  */
 function getAppVisitedViews(appName) {
-    let views = getVisitedViews()
-    views = views.filter(m => appName === (m.meta && m.meta.appName))
-    return views
+    return getVisitedViews().filter(m => isAppView(appName, m))
 }
 
 /**
@@ -125,6 +120,7 @@ export default {
     EVENT_VISITED_CHANGE,
     EVENT_CACHED_CHANGE,
     invokeEvent,
+    isAppView,
     getVisitedViews,
     getAppVisitedViews,
     getCachedViews,

@@ -2,7 +2,7 @@
   <section class="app-main">
     <transition name="fade-transform" mode="out-in">
       <keep-alive :include="cachedViews">
-        <router-view :key="key" />
+        <router-view v-if="showView" :key="key" />
       </keep-alive>
     </transition>
     <app-wrap />
@@ -18,12 +18,27 @@ export default {
   components: {
     AppWrap,
   },
+  data() {
+    return {
+      showView: true,
+    };
+  },
   computed: {
     cachedViews() {
       return this.$store.state.tagsView.cachedViews;
     },
+    refreshKey() {
+      return this.$store.state.tagsView.refreshKey;
+    },
     key() {
       return this.$route.path;
+    },
+  },
+  watch: {
+    // 刷新视图(不改变缓存key)
+    refreshKey() {
+      this.showView = false;
+      this.$nextTick(() => (this.showView = true));
     },
   },
   mounted() {

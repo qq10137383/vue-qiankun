@@ -1,4 +1,4 @@
-import { registerMicroApps } from 'qiankun-dhc'
+import { registerMicroApps } from 'qiankun-dhcc'
 import getAppConfigs from './config'
 import emitter from './emitter'
 import tabView from './tab-view'

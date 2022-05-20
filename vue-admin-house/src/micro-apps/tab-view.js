@@ -10,11 +10,19 @@ export function initTagView(inst) {
         inst.$store.dispatch('tagsView/setCachedViews', views)
     }
 
+    function refreshView(view) {
+        if (tabView.isAppView(process.env.VUE_APP_NAME, view)) {
+            inst.$store.dispatch('tagsView/refreshViewKey')
+        }
+    }
+
     emitter.on(tabView.EVENT_CACHED_CHANGE, setCachedViews)
+    emitter.on(tabView.EVENT_REFRESH_VIEW, refreshView)
 
     setCachedViews()
 
     inst.$once('hook:beforeDestroy', () => {
-        emitter.off(tagsView.EVENT_CACHED_CHANGE, setCachedViews)
+        emitter.off(tabView.EVENT_CACHED_CHANGE, setCachedViews)
+        emitter.on(tabView.EVENT_REFRESH_VIEW, refreshView)
     })
 }
