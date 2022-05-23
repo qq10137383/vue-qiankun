@@ -9,14 +9,10 @@ const mutations = {
   }
 }
 
-const actions = {
-  setApp: ({ commit }, app) => {
-    commit('SET_APP', app)
-  }
-}
+const actions = {}
 
 export default {
-  namespace: true,
+  namespaced: true,
   state,
   mutations,
   actions

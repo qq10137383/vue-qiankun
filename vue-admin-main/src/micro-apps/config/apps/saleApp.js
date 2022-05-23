@@ -1,6 +1,10 @@
 const app = {
   // 微应用名称
   name: 'vue-admin-sale',
+  // 微应用标题
+  title: '预售资金监管',
+  // icon
+  icon: 'search',
   // 开发环境微应用端口号
   devPort: 4000,
   // 生产环境微应用部署地址

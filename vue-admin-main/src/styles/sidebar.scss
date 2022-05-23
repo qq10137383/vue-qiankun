@@ -1,8 +1,7 @@
 #app {
-
   .main-container {
     min-height: 100%;
-    transition: margin-left .28s;
+    transition: margin-left 0.28s;
     margin-left: $sideBarWidth;
     position: relative;
   }
@@ -22,7 +21,52 @@
 
     // reset element-ui css
     .horizontal-collapse-transition {
-      transition: 0s width ease-in-out, 0s padding-left ease-in-out, 0s padding-right ease-in-out;
+      transition: 0s width ease-in-out, 0s padding-left ease-in-out,
+        0s padding-right ease-in-out;
+    }
+
+    .side-menu-wrap {
+      height: 100%;
+      position: relative;
+    }
+
+    .appbar-wrap {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: $appbarWidth;
+      bottom: 0;
+      border-right: 1px solid #263445;
+      font-size: 14px;
+    }
+
+    .appbar-list {
+      padding: 6px 2px;
+    }
+
+    .appbar-item {
+      padding: 10px 2px;
+      text-align: center;
+      font-size: 12px;
+      transition: all 0.3s;
+      border-radius: 2px;
+      margin-bottom: 6px;
+      color: #eee;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #263445;
+      }
+
+      &.actived {
+        color: #1890ff;
+        background-color: #263445;
+      }
+
+      .svg-icon {
+        margin-bottom: 8px;
+        font-size: 16px;
+      }
     }
 
     .scrollbar-wrapper {
@@ -33,12 +77,13 @@
       right: 0px;
     }
 
-    .el-scrollbar {
+    .app-menu-wrap {
       height: 100%;
+      margin-left: $appbarWidth;
     }
 
     &.has-logo {
-      .el-scrollbar {
+      .side-menu-wrap {
         height: calc(100% - 50px);
       }
     }
@@ -47,25 +92,29 @@
       display: none;
     }
 
-    a {
-      display: inline-block;
-      width: 100%;
-      overflow: hidden;
-    }
-
-    .svg-icon {
-      margin-right: 16px;
-    }
-
-    .sub-el-icon {
-      margin-right: 12px;
-      margin-left: -2px;
+    .app-bar-wrap {
+      width: 54px;
     }
 
     .el-menu {
       border: none;
       height: 100%;
       width: 100% !important;
+
+      a {
+        display: inline-block;
+        width: 100%;
+        overflow: hidden;
+      }
+
+      .svg-icon {
+        margin-right: 16px;
+      }
+
+      .sub-el-icon {
+        margin-right: 12px;
+        margin-left: -2px;
+      }
     }
 
     // menu hover
@@ -76,11 +125,11 @@
       }
     }
 
-    .is-active>.el-submenu__title {
+    .is-active > .el-submenu__title {
       color: $subMenuActiveText !important;
     }
 
-    & .nest-menu .el-submenu>.el-submenu__title,
+    & .nest-menu .el-submenu > .el-submenu__title,
     & .el-submenu .el-menu-item {
       min-width: $sideBarWidth !important;
       background-color: $subMenuBg !important;
@@ -94,6 +143,10 @@
   .hideSidebar {
     .sidebar-container {
       width: 54px !important;
+    }
+
+    .el-menu {
+      display: none;
     }
 
     .main-container {
@@ -120,7 +173,7 @@
     .el-submenu {
       overflow: hidden;
 
-      &>.el-submenu__title {
+      & > .el-submenu__title {
         padding: 0 !important;
 
         .svg-icon {
@@ -139,8 +192,8 @@
 
     .el-menu--collapse {
       .el-submenu {
-        &>.el-submenu__title {
-          &>span {
+        & > .el-submenu__title {
+          & > span {
             height: 0;
             width: 0;
             overflow: hidden;
@@ -163,7 +216,7 @@
     }
 
     .sidebar-container {
-      transition: transform .28s;
+      transition: transform 0.28s;
       width: $sideBarWidth !important;
     }
 
@@ -177,7 +230,6 @@
   }
 
   .withoutAnimation {
-
     .main-container,
     .sidebar-container {
       transition: none;
@@ -187,7 +239,7 @@
 
 // when menu collapsed
 .el-menu--vertical {
-  &>.el-menu {
+  & > .el-menu {
     .svg-icon {
       margin-right: 16px;
     }
@@ -197,7 +249,7 @@
     }
   }
 
-  .nest-menu .el-submenu>.el-submenu__title,
+  .nest-menu .el-submenu > .el-submenu__title,
   .el-menu-item {
     &:hover {
       // you can use $subMenuHover
@@ -206,7 +258,7 @@
   }
 
   // the scroll bar appears when the subMenu is too long
-  >.el-menu--popup {
+  > .el-menu--popup {
     max-height: 100vh;
     overflow-y: auto;
 

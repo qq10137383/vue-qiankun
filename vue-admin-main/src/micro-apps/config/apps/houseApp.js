@@ -1,6 +1,10 @@
 const app = {
   // 微应用名称
   name: 'vue-admin-house',
+  // 微应用标题
+  title: '商品房交易',
+  // icon
+  icon: 'user',
   // 开发环境微应用端口号
   devPort: 4100,
   // 生产环境微应用部署地址

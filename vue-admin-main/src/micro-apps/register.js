@@ -1,5 +1,5 @@
 import { registerMicroApps } from 'qiankun-dhcc'
-import getAppConfigs from './config'
+import config from './config'
 import emitter from './emitter'
 import tabView from './tab-view'
 
@@ -8,7 +8,6 @@ function getAppEntry(app) {
 }
 
 export function getRegisterConfig() {
-  const config = getAppConfigs()
   return Object.keys(config).map(name => {
     const app = config[name]
     return {

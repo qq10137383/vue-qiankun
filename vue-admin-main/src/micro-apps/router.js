@@ -1,6 +1,6 @@
 import { deepClone } from '@/utils'
 import { Layout, Blank } from '@/layout'
-import getAppConfigs from './config'
+import config from './config'
 
 /**
  * 转换微应用路由
@@ -8,7 +8,7 @@ import getAppConfigs from './config'
  * @param {Object} route 
  * @param {Object} parent 
  */
-function parseAppRoute(app, route, parent) {
+function parseRoute(app, route, parent) {
   const meta = route.meta || (route.meta = {})
   const origin = meta.origin = {}
   meta.appName = app.name
@@ -26,7 +26,7 @@ function parseAppRoute(app, route, parent) {
     route.redirect = `/${app.name}${route.redirect}`
   }
   if (route.children) {
-    route.children.forEach(child => parseAppRoute(app, child, route))
+    route.children.forEach(child => parseRoute(app, child, route))
   }
 }
 
@@ -34,12 +34,11 @@ function parseAppRoute(app, route, parent) {
  * 获取微应用路由
  * @returns 
  */
-export function getAppRoutes() {
-  const config = getAppConfigs()
+export function getRoutes() {
   const routes = Object.keys(config).reduce((routes, name) => {
     const app = config[name]
     const menus = deepClone(app.menus || [])
-    menus.forEach(item => parseAppRoute(app, item))
+    menus.forEach(item => parseRoute(app, item))
     routes.push(...menus)
     return routes
   }, [])
@@ -74,4 +73,17 @@ export function cloneRoute(route) {
 export function getAppNameFromRoute(route) {
   let tmp = route
   return (tmp = tmp.meta) && (tmp = tmp.appName) || ''
+}
+
+/**
+ * 过滤微应用路由
+ * @param {String} appName 应用名
+ * @param {Array} routes 路由集合
+ */
+export function filterAppRoutes(appName, routes) {
+  let appRoutes = []
+  if (appName) {
+    appRoutes = routes.filter(m => getAppNameFromRoute(m) === appName)
+  }
+  return appRoutes
 }

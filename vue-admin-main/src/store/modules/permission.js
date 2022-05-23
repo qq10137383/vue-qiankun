@@ -1,5 +1,5 @@
 import { constantRoutes } from '@/router'
-import { getAppRoutes } from '@/micro-apps/router'
+import { getRoutes } from '@/micro-apps/router'
 
 /**
  * Use meta.role to determine if the current user has permission
@@ -51,7 +51,7 @@ const actions = {
   generateRoutes({ commit }, roles) {
     return new Promise(resolve => {
       let accessedRoutes
-      const appRoutes = getAppRoutes()
+      const appRoutes = getRoutes()
       if (roles.includes('admin')) {
         accessedRoutes = appRoutes || []
       } else {
