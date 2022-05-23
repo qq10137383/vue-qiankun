@@ -59,6 +59,11 @@
     <button @click="changeData">change</button>
     <p>{{ $data._name }}</p>
     <button @click="changeData1">change1</button>
+    <button @click="addRoute">addRoute</button>
+    <button @click="closeRoute">closeRoute</button>
+    <button @click="closeCurrentRoute">closeCurrentRoute</button>
+    <button @click="refreshView">refreshView</button>
+    <button @click="refreshCurrentView">refreshCurrentView</button>
   </div>
 </template>
 
@@ -96,6 +101,37 @@ export default {
     },
     changeData1() {
       this.$data._name += "d";
+    },
+    addRoute() {
+      // this.$mainApp.tabView.openView({
+      //   appName: "vue-admin-house",
+      //   path: '/submit/index'
+      // });
+      // this.$mainApp.tabView.openView({
+      //   path: "/dashboard",
+      // });
+      this.$mainApp.tabView.openView({
+        appName: "vue-admin-sale",
+        path: "/example/table",
+      });
+    },
+    closeRoute() {
+      this.$mainApp.tabView.closeView({
+        appName: "vue-admin-house",
+        path: "/submit/index",
+      });
+    },
+    closeCurrentRoute() {
+      this.$mainApp.tabView.closeCurrentView();
+    },
+    refreshView() {
+      this.$mainApp.tabView.refreshView({
+        appName: "vue-admin-house",
+        path: "/submit/index",
+      });
+    },
+    refreshCurrentView() {
+      this.$mainApp.tabView.refreshCurrentView();
     },
   },
 };
